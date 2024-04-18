@@ -99,24 +99,27 @@ int main()
         // first triangle
         0.5f,  0.5f, 0.0f,  // top right
         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f,  0.5f, 0.0f,  // top left 
-        // second triangle
-        0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f,   // top left
-        // third triangle
-        0.5f, -0.5f, 0.0f,  // top right
-        -0.5f, -0.5f, 0.0f,  // top left
+        -0.5f,  0.5f, 0.0f,  // top left 
         0.0f,  -1.0f, 0.0f,   // bottom center
     }; 
 
-    unsigned int VBO, VAO;
+    unsigned int indices[] = {
+        0, 1, 3, // first triangle
+        1, 2, 3, // second triangle
+        1, 2, 4, // third triangle
+    };
+
+    unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // GL_STREAM_DRAW: the data is set only once and used by the GPU at most a few times.
     // GL_STATIC_DRAW: the data is set only once and used many times.
     // GL_DYNAMIC_DRAW: the data is changed a lot and used many times.
@@ -138,7 +141,8 @@ int main()
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         // glDrawArray last parameter for amount coordinate
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/3);
+        // glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/3);
+        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
@@ -146,6 +150,7 @@ int main()
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
     glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;
