@@ -15,16 +15,19 @@ const unsigned int SCR_WIDTH  = 800;
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor;\n"
+    "out vec3 ourColor;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos, 1.0);\n"
+    "   ourColor = aColor;\n"
     "}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
-    "uniform vec4 ourColor;\n"
+    "in vec3 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = ourColor;\n"
+    "   FragColor = vec4(ourColor, 0.0f);\n"
     "}\n\0";
 
 int main()
@@ -98,12 +101,12 @@ int main()
     glDeleteShader(fragmentShader);
 
     float vertices[] = {
-        // first triangle
-        0.5f,  0.5f, 0.0f,  // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f,  // top left 
-        0.0f,  -1.0f, 0.0f,   // bottom center
+        // position             // colors
+         0.5f,  0.5f, 0.0f,     1.0f, 0.0f, 0.0f,   // top right
+         0.5f, -0.5f, 0.0f,     0.0f, 1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 1.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,     1.0f, 1.0f, 0.0f,   // top left
+         0.0f, -1.0f, 0.0f,     1.0f, 0.0f, 1.0f,   // bottom center
     }; 
 
     unsigned int indices[] = {
@@ -126,11 +129,14 @@ int main()
     // GL_STATIC_DRAW: the data is set only once and used many times.
     // GL_DYNAMIC_DRAW: the data is changed a lot and used many times.
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-    glBindVertexArray(0); 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
     // main loop
     while(!glfwWindowShouldClose(window))
     {
@@ -143,13 +149,13 @@ int main()
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
 
-        // update shader uniform
-        double  timeValue = glfwGetTime();
-        float redValue = static_cast<float>(sin(timeValue) / 1.5 + 0.5);
-        float greenValue = static_cast<float>(sin(timeValue) / 2.0 + 0.5);
-        float blueValue = static_cast<float>(sin(timeValue) / 2.5 + 0.5);
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
+        // // update shader uniform
+        // double  timeValue = glfwGetTime();
+        // float redValue = static_cast<float>(sin(timeValue) / 1.5 + 0.5);
+        // float greenValue = static_cast<float>(sin(timeValue) / 2.0 + 0.5);
+        // float blueValue = static_cast<float>(sin(timeValue) / 2.5 + 0.5);
+        // int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        // glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
 
         // glDrawArray last parameter for amount coordinate
         // glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/3);
