@@ -96,9 +96,18 @@ int main()
     glDeleteShader(fragmentShader);
 
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left  
-         0.5f, -0.5f, 0.0f, // right 
-         0.0f,  0.5f, 0.0f  // top   
+        // first triangle
+        0.5f,  0.5f, 0.0f,  // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f,  0.5f, 0.0f,  // top left 
+        // second triangle
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f,   // top left
+        // third triangle
+        0.5f, -0.5f, 0.0f,  // top right
+        -0.5f, -0.5f, 0.0f,  // top left
+        0.0f,  -1.0f, 0.0f,   // bottom center
     }; 
 
     unsigned int VBO, VAO;
@@ -128,7 +137,8 @@ int main()
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawArray last parameter for amount coordinate
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/3);
 
         glfwSwapBuffers(window);
         glfwPollEvents();    
